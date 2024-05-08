@@ -60,10 +60,10 @@ export default class EnCharge implements INodeType {
 				options: [
 					{
 						name: 'Contact',
-						value: 'contact',
+						value: 'people',
 					},
 				],
-				default: 'contact',
+				default: 'people',
 			},
 			...contactOperations,
 			...contactFields,
