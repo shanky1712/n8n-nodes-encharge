@@ -29,6 +29,14 @@ export class ExampleNode implements INodeType {
 				placeholder: 'Placeholder value',
 				description: 'The description text',
 			},
+			{
+				displayName: 'My Second String',
+				name: 'mySecondString',
+				type: 'string',
+				default: '',
+				placeholder: 'Placeholder Second value',
+				description: 'The description Second text',
+			},
 		],
 	};
 

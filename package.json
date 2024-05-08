@@ -1,5 +1,5 @@
 {
-  "name": "n8n-nodes-<...>",
+  "name": "n8n-nodes-encharge",
   "version": "0.1.0",
   "description": "",
   "keywords": [
@@ -31,10 +31,12 @@
     "n8nNodesApiVersion": 1,
     "credentials": [
       "dist/credentials/ExampleCredentialsApi.credentials.js",
+      "dist/credentials/EnchargeApi.credentials.js",
       "dist/credentials/HttpBinApi.credentials.js"
     ],
     "nodes": [
       "dist/nodes/ExampleNode/ExampleNode.node.js",
+      "dist/nodes/Encharge/Encharge.node.js",
       "dist/nodes/HttpBin/HttpBin.node.js"
     ]
   },
@@ -48,5 +50,8 @@
   },
   "peerDependencies": {
     "n8n-workflow": "*"
+  },
+  "dependencies": {
+    "moment-timezone": "^0.5.45"
   }
 }

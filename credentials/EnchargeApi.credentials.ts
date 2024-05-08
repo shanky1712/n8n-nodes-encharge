@@ -5,23 +5,23 @@ import {
 	INodeProperties,
 } from 'n8n-workflow';
 
-export class HttpBinApi implements ICredentialType {
-	name = 'httpbinApi';
-	displayName = 'HttpBin API';
+export class EnchargeApi implements ICredentialType {
+	name = 'enchargeApi';
+	displayName = 'Encharge API';
 	documentationUrl = '<your-docs-url>';
 	properties: INodeProperties[] = [
 		{
-			displayName: 'Token',
+			displayName: 'Encharge API Url',
+			name: 'domain',
+			type: 'string',
+			default: 'https://api.encharge.io/v1',
+		},
+		{
+			displayName: 'Encharge API Key',
 			name: 'token',
 			type: 'string',
 			typeOptions: { password: true },
 			default: '',
-		},
-		{
-			displayName: 'Domain',
-			name: 'domain',
-			type: 'string',
-			default: 'https://httpbin.org',
 		},
 	];
 

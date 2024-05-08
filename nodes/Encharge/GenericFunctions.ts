@@ -1,0 +1,80 @@
+import type {
+	IDataObject,
+	IExecuteFunctions,
+	IHookFunctions,
+	IHttpRequestMethods,
+	ILoadOptionsFunctions,
+	IHttpRequestOptions,
+	IWebhookFunctions,
+	JsonObject,
+} from 'n8n-workflow';
+import { NodeApiError } from 'n8n-workflow';
+
+export async function enchargeApiRequest(
+	this: IWebhookFunctions | IHookFunctions | IExecuteFunctions | ILoadOptionsFunctions,
+	method: IHttpRequestMethods,
+	resource: string,
+
+	body: any = {},
+	qs: IDataObject = {},
+	uri?: string,
+	option: IDataObject = {},
+): Promise<any> {
+	const authentication = this.getNodeParameter('authentication', 0, 'token') as string;
+
+	let options: IHttpRequestOptions = {
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		method,
+		body,
+		qs,
+		url: uri || `https://api.encharge.io/v1${resource}`,
+		json: true,
+	};
+	try {
+		options = Object.assign({}, options, option);
+		if (Object.keys(body as IDataObject).length === 0) {
+			delete options.body;
+		}
+
+		if (authentication === 'token') {
+			return await this.helpers.requestWithAuthentication.call(this, 'enchargeApi', options);
+		} else {
+			//@ts-ignore
+			return await this.helpers.requestOAuth2.call(this, 'enchargeOAuth2Api', options);
+		}
+	} catch (error) {
+		throw new NodeApiError(this.getNode(), error as JsonObject);
+	}
+}
+
+export async function enChargeApiRequestAllItems(
+	this: IExecuteFunctions | ILoadOptionsFunctions,
+	method: IHttpRequestMethods,
+	endpoint: string,
+
+	body: any = {},
+	query: IDataObject = {},
+): Promise<any> {
+	const returnData: IDataObject[] = [];
+
+	let responseData;
+	query.page = 1;
+
+	do {
+		responseData = await enchargeApiRequest.call(
+			this,
+			method,
+			endpoint,
+			body,
+			query,
+			undefined,
+			{ resolveWithFullResponse: true },
+		);
+		query.page++;
+		returnData.push.apply(returnData, responseData.body as IDataObject[]);
+	} while (responseData.headers.TotalPages !== responseData.headers.CurrentPage);
+
+	return returnData;
+}
