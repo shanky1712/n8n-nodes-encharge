@@ -18,7 +18,7 @@ export class HttpBin implements INodeType {
 		credentials: [
 			{
 				name: 'httpbinApi',
-				required: false,
+				required: true,
 			},
 		],
 		requestDefaults: {

@@ -1,4 +1,4 @@
-import type {
+import {
 	IExecuteFunctions,
 	IDataObject,
 	ILoadOptionsFunctions,
@@ -8,29 +8,25 @@ import type {
 	INodeTypeDescription,
 } from 'n8n-workflow';
 
-// import moment from 'moment-timezone';
 import { enchargeApiRequest } from './GenericFunctions';
 
 import { contactFields, contactOperations } from './ContactDescription';
-
-export default class EnCharge implements INodeType {
+export class Encharge implements INodeType {
 	description: INodeTypeDescription = {
-		displayName: 'EnCharge',
+		displayName: 'Encharge',
 		name: 'enCharge',
-		// eslint-disable-next-line n8n-nodes-base/node-class-description-icon-not-svg
 		icon: 'file:enCharge.png',
 		group: ['input'],
 		version: 1,
-		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
-		description: 'Consume EnCharge API',
+		description: 'Basic Encharge Node',
 		defaults: {
-			name: 'EnCharge',
+			name: 'Encharge Node',
 		},
 		inputs: ['main'],
 		outputs: ['main'],
 		credentials: [
 			{
-				name: 'enChargeApi',
+				name: 'enchargeApi',
 				required: true,
 				displayOptions: {
 					show: {
@@ -69,25 +65,27 @@ export default class EnCharge implements INodeType {
 			...contactFields,
 		],
 	};
-
 	methods = {
 		loadOptions: {
 			// Get all the tagd to display them to user so that they can
 			// select them easily
 			async getTags(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
 				const returnData: INodePropertyOptions[] = [];
-				const tags = await enchargeApiRequest.call(this, 'GET', '/tags-management');
-				for (const tag of tags) {
+				const data = await enchargeApiRequest.call(this, 'GET', '/tags-management');
+				for (const eachData of data.tags) {
 					returnData.push({
-						name: tag.tags.tag as string,
-						value: tag.tags.tag,
+						name: eachData.tag as string,
+						value: eachData.tag as string,
 					});
 				}
 				return returnData;
 			},
 		},
 	};
-
+	// The function below is responsible for actually doing whatever this node
+	// is supposed to do. In this case, we're just appending the `myString` property
+	// with whatever the user has entered.
+	// You can make async calls and use `await`.
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
 		const items = this.getInputData();
 		const returnData: INodeExecutionData[] = [];
@@ -99,67 +97,36 @@ export default class EnCharge implements INodeType {
 		for (let i = 0; i < length; i++) {
 			try {
 				if (resource === 'people') {
-					//https://apireference.getresponse.com/#operation/createContact
 					if (operation === 'create') {
 						const email = this.getNodeParameter('email', i) as string;
-
-						// const campaignId = this.getNodeParameter('campaignId', i) as string;
-
-						// const additionalFields = this.getNodeParameter('additionalFields', i);
-
+						const additionalFields = this.getNodeParameter('additionalFields', i);
 						const body: IDataObject = {
 							email,
-							// campaign: {
-							// 	campaignId,
-							// },
 						};
+						Object.assign(body, additionalFields);
 
+						if (additionalFields.customFieldsUi) {
+							const customFieldValues = (additionalFields.customFieldsUi as IDataObject)
+								.customFieldValues as IDataObject[];
+							if (customFieldValues) {
+								body.customFieldValues = customFieldValues;
+								for (let index = 0; index < customFieldValues.length; index++) {
+									if (!Array.isArray(customFieldValues[index].value)) {
+										customFieldValues[index].value = [customFieldValues[index].value];
+									}
+								}
+								delete body.customFieldsUi;
+							}
+						}
 						responseData = await enchargeApiRequest.call(this, 'POST', '/people', body);
-
 						responseData = { success: true };
 					}
-					//https://apireference.getresponse.com/?_ga=2.160836350.2102802044.1604719933-1897033509.1604598019#operation/deleteContact
-					if (operation === 'delete') {
-						const contactId = this.getNodeParameter('contactId', i) as string;
-
-						const options = this.getNodeParameter('options', i);
-
-						Object.assign(qs, options);
-
-						responseData = await enchargeApiRequest.call(
-							this,
-							'DELETE',
-							`/people/${contactId}`,
-							{},
-							qs,
-						);
-
-						responseData = { success: true };
-					}
-					//https://apireference.getresponse.com/?_ga=2.160836350.2102802044.1604719933-1897033509.1604598019#operation/getContactById
-					if (operation === 'get') {
-						const contactId = this.getNodeParameter('contactId', i) as string;
-
-						const options = this.getNodeParameter('options', i);
-
-						Object.assign(qs, options);
-
-						responseData = await enchargeApiRequest.call(
-							this,
-							'GET',
-							`/people/${contactId}`,
-							{},
-							qs,
-						);
-					}
-					//https://apireference.getresponse.com/?_ga=2.160836350.2102802044.1604719933-1897033509.1604598019#operation/updateContact
 					if (operation === 'update') {
-						const contactId = this.getNodeParameter('contactId', i) as string;
-
+						const email = this.getNodeParameter('email', i) as string;
 						const updateFields = this.getNodeParameter('updateFields', i);
-
-						const body: IDataObject = {};
-
+						const body: IDataObject = {
+							email,
+						};
 						Object.assign(body, updateFields);
 
 						if (updateFields.customFieldsUi) {
@@ -167,16 +134,40 @@ export default class EnCharge implements INodeType {
 								.customFieldValues as IDataObject[];
 							if (customFieldValues) {
 								body.customFieldValues = customFieldValues;
+								for (let index = 0; index < customFieldValues.length; index++) {
+									if (!Array.isArray(customFieldValues[index].value)) {
+										customFieldValues[index].value = [customFieldValues[index].value];
+									}
+								}
 								delete body.customFieldsUi;
 							}
 						}
+						responseData = await enchargeApiRequest.call(this, 'POST', '/people', body);
+						responseData = { success: true };
+					}
+					if (operation === 'get') {
+						const email = this.getNodeParameter('email', i) as string;
+						const options = this.getNodeParameter('options', i);
+						Object.assign(qs, options);
 
 						responseData = await enchargeApiRequest.call(
 							this,
-							'POST',
-							`/people/${contactId}`,
-							body,
+							'GET',
+							`/people?people[0][email]=${email}`,
+							{},
+							qs,
 						);
+					}
+					if (operation === 'delete') {
+						const email = this.getNodeParameter('email', i) as string;
+						responseData = await enchargeApiRequest.call(
+							this,
+							'DELETE',
+							`/people?people[0][email]=${email}`,
+							{},
+							qs,
+						);
+						responseData = { success: true };
 					}
 				}
 				const executionData = this.helpers.constructExecutionMetaData(

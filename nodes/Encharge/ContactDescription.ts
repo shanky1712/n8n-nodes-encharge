@@ -49,6 +49,7 @@ export const contactFields: INodeProperties[] = [
 		displayName: 'Email',
 		name: 'email',
 		type: 'string',
+		required: true,
 		placeholder: 'name@email.com',
 		displayOptions: {
 			show: {
@@ -72,14 +73,6 @@ export const contactFields: INodeProperties[] = [
 		},
 		options: [
 			{
-				displayName: 'Day Of Cycle',
-				name: 'dayOfCycle',
-				type: 'string',
-				description:
-					'The day on which the contact is in the Autoresponder cycle. null indicates the contacts is not in the cycle.',
-				default: '',
-			},
-			{
 				displayName: 'IP Address',
 				name: 'ipAddress',
 				type: 'string',
@@ -93,25 +86,40 @@ export const contactFields: INodeProperties[] = [
 				default: '',
 			},
 			{
-				displayName: 'Note',
-				name: 'note',
+				displayName: 'userId',
+				name: 'userId',
 				type: 'string',
 				default: '',
 			},
 			{
-				displayName: 'Scoring',
-				name: 'scoring',
-				type: 'number',
+				displayName: 'firstName',
+				name: 'firstName',
+				type: 'string',
 				default: '',
-				description: 'Contact scoring, pass null to remove the score from a contact',
-				typeOptions: {
-					minValue: 0,
-				},
+			},
+			{
+				displayName: 'lastName',
+				name: 'lastName',
+				type: 'string',
+				default: '',
+			},
+			{
+				displayName: 'utm_source',
+				name: 'utm_source',
+				type: 'string',
+				default: 'ABCD',
+			},
+			{
+				displayName: 'first_utm_source',
+				name: 'first_utm_source',
+				type: 'string',
+				default: 'n8n',
 			},
 			{
 				displayName: 'Tag Names or IDs',
 				name: 'tags',
-				type: 'multiOptions',
+				// type: 'multiOptions',
+				type: 'options',
 				description:
 					'Choose from the list, or specify IDs using an <a href="https://docs.n8n.io/code-examples/expressions/">expression</a>',
 				typeOptions: {
@@ -126,8 +134,8 @@ export const contactFields: INodeProperties[] = [
 	/*                                  contact:delete                            */
 	/* -------------------------------------------------------------------------- */
 	{
-		displayName: 'Contact ID',
-		name: 'contactId',
+		displayName: 'Email',
+		name: 'email',
 		type: 'string',
 		required: true,
 		displayOptions: {
@@ -139,44 +147,13 @@ export const contactFields: INodeProperties[] = [
 		default: '',
 		description: 'ID of contact to delete',
 	},
-	{
-		displayName: 'Options',
-		name: 'options',
-		type: 'collection',
-		placeholder: 'Add Field',
-		default: {},
-		displayOptions: {
-			show: {
-				resource: ['people'],
-				operation: ['delete'],
-			},
-		},
-		options: [
-			{
-				displayName: 'IP Address',
-				name: 'ipAddress',
-				type: 'string',
-				description:
-					'This makes it possible to pass the IP from which the contact unsubscribed. Used only if the messageId was send.',
-				default: '',
-			},
-			{
-				displayName: 'Message ID',
-				name: 'messageId',
-				type: 'string',
-				description:
-					'The ID of a message (such as a newsletter, an autoresponder, or an RSS-newsletter). When passed, this method will simulate the unsubscribe process, as if the contact clicked the unsubscribe link in a given message.',
-				default: '',
-			},
-		],
-	},
 
 	/* -------------------------------------------------------------------------- */
 	/*                                  contact:get                               */
 	/* -------------------------------------------------------------------------- */
 	{
-		displayName: 'Contact ID',
-		name: 'contactId',
+		displayName: 'People EMail',
+		name: 'email',
 		type: 'string',
 		required: true,
 		displayOptions: {
@@ -191,8 +168,11 @@ export const contactFields: INodeProperties[] = [
 	{
 		displayName: 'Options',
 		name: 'options',
-		type: 'collection',
 		placeholder: 'Add Field',
+		type: 'fixedCollection',
+		typeOptions: {
+			multipleValues: true,
+		},
 		default: {},
 		displayOptions: {
 			show: {
@@ -202,12 +182,26 @@ export const contactFields: INodeProperties[] = [
 		},
 		options: [
 			{
-				displayName: 'Fields',
-				name: 'fields',
-				type: 'string',
-				description:
-					'List of fields that should be returned. ID is always returned. Fields should be separated by comma',
-				default: '',
+				name: 'fieldsValues',
+				displayName: 'Custom Field',
+				values: [
+					{
+						displayName: 'Field Key',
+						name: 'key',
+						type: 'string',
+						default: '',
+						placeholder: 'last_name',
+						description: "The field's key",
+					},
+					{
+						displayName: 'Field Value',
+						name: 'value',
+						type: 'string',
+						default: '',
+						placeholder: 'Doe',
+						description: 'Value of the field',
+					},
+				],
 			},
 		],
 	},
@@ -216,8 +210,8 @@ export const contactFields: INodeProperties[] = [
 	/*                                contact:update                               */
 	/* -------------------------------------------------------------------------- */
 	{
-		displayName: 'Contact ID',
-		name: 'contactId',
+		displayName: 'Email',
+		name: 'email',
 		type: 'string',
 		required: true,
 		displayOptions: {
@@ -233,7 +227,7 @@ export const contactFields: INodeProperties[] = [
 		displayName: 'Update Fields',
 		name: 'updateFields',
 		type: 'collection',
-		placeholder: 'Add Field',
+		placeholder: 'Update Field',
 		default: {},
 		displayOptions: {
 			show: {
@@ -242,21 +236,6 @@ export const contactFields: INodeProperties[] = [
 			},
 		},
 		options: [
-			{
-				displayName: 'Day Of Cycle',
-				name: 'dayOfCycle',
-				type: 'string',
-				description:
-					'The day on which the contact is in the Autoresponder cycle. null indicates the contacts is not in the cycle.',
-				default: '',
-			},
-			{
-				displayName: 'Email',
-				name: 'email',
-				type: 'string',
-				placeholder: 'name@email.com',
-				default: '',
-			},
 			{
 				displayName: 'IP Address',
 				name: 'ipAddress',
@@ -271,25 +250,40 @@ export const contactFields: INodeProperties[] = [
 				default: '',
 			},
 			{
-				displayName: 'Note',
-				name: 'note',
+				displayName: 'userId',
+				name: 'userId',
 				type: 'string',
 				default: '',
 			},
 			{
-				displayName: 'Scoring',
-				name: 'scoring',
-				type: 'number',
+				displayName: 'firstName',
+				name: 'firstName',
+				type: 'string',
 				default: '',
-				description: 'Contact scoring, pass null to remove the score from a contact',
-				typeOptions: {
-					minValue: 0,
-				},
+			},
+			{
+				displayName: 'lastName',
+				name: 'lastName',
+				type: 'string',
+				default: '',
+			},
+			{
+				displayName: 'utm_source',
+				name: 'utm_source',
+				type: 'string',
+				default: 'ABCD',
+			},
+			{
+				displayName: 'first_utm_source',
+				name: 'first_utm_source',
+				type: 'string',
+				default: 'n8n',
 			},
 			{
 				displayName: 'Tag Names or IDs',
 				name: 'tags',
-				type: 'multiOptions',
+				// type: 'multiOptions',
+				type: 'options',
 				description:
 					'Choose from the list, or specify IDs using an <a href="https://docs.n8n.io/code-examples/expressions/">expression</a>',
 				typeOptions: {
