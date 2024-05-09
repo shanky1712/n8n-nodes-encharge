@@ -15,11 +15,11 @@ export async function enchargeApiRequest(
 	method: IHttpRequestMethods,
 	resource: string,
 
-	body: any = {},
+	body: any = {}, // eslint-disable-line @typescript-eslint/no-explicit-any
 	qs: IDataObject = {},
 	uri?: string,
 	option: IDataObject = {},
-): Promise<any> {
+): Promise<any> { // eslint-disable-line @typescript-eslint/no-explicit-any
 	const authentication = this.getNodeParameter('authentication', 0, 'token') as string;
 
 	let options: IHttpRequestOptions = {
@@ -41,7 +41,6 @@ export async function enchargeApiRequest(
 		if (authentication === 'token') {
 			return await this.helpers.requestWithAuthentication.call(this, 'enchargeApi', options);
 		} else {
-			//@ts-ignore
 			return await this.helpers.requestOAuth2.call(this, 'enchargeOAuth2Api', options);
 		}
 	} catch (error) {
