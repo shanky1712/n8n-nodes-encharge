@@ -118,7 +118,6 @@ export const contactFields: INodeProperties[] = [
 			{
 				displayName: 'Tag Names or IDs',
 				name: 'tags',
-				// type: 'multiOptions',
 				type: 'options',
 				description:
 					'Choose from the list, or specify IDs using an <a href="https://docs.n8n.io/code-examples/expressions/">expression</a>',
@@ -282,7 +281,6 @@ export const contactFields: INodeProperties[] = [
 			{
 				displayName: 'Tag Names or IDs',
 				name: 'tags',
-				// type: 'multiOptions',
 				type: 'options',
 				description:
 					'Choose from the list, or specify IDs using an <a href="https://docs.n8n.io/code-examples/expressions/">expression</a>',

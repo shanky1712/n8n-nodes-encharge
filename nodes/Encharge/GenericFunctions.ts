@@ -48,33 +48,3 @@ export async function enchargeApiRequest(
 		throw new NodeApiError(this.getNode(), error as JsonObject);
 	}
 }
-
-// export async function enChargeApiRequestAllItems(
-// 	this: IExecuteFunctions | ILoadOptionsFunctions,
-// 	method: IHttpRequestMethods,
-// 	endpoint: string,
-
-// 	body: any = {},
-// 	query: IDataObject = {},
-// ): Promise<any> {
-// 	const returnData: IDataObject[] = [];
-
-// 	let responseData;
-// 	query.page = 1;
-
-// 	do {
-// 		responseData = await enchargeApiRequest.call(
-// 			this,
-// 			method,
-// 			endpoint,
-// 			body,
-// 			query,
-// 			undefined,
-// 			{ resolveWithFullResponse: true },
-// 		);
-// 		query.page++;
-// 		returnData.push.apply(returnData, responseData.body as IDataObject[]);
-// 	} while (responseData.headers.TotalPages !== responseData.headers.CurrentPage);
-
-// 	return returnData;
-// }
